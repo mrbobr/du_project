@@ -1,5 +1,4 @@
 FROM nginx:stable-alpine3.17
-ADD https://github.com/mrbobr/du_project.git /du_project
-COPY /du_project/docker2401/src/ /usr/share/nginx/html
-EXPOSE 8888
+RUN apk update && apk add git && git clone https://github.com/mrbobr/du_project.git /du_project && cp -r /du_project/docker2401/src/* /usr/share/nginx/html
+EXPOSE 80
 
