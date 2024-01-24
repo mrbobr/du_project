@@ -1,5 +1,5 @@
 FROM nginx:stable-alpine3.17
-RUN git clone -q https://github.com/mrbobr/du_project.git
-COPY 
-EXPOSE 8000
-CMD ["npm","start"]
+ADD https://github.com/mrbobr/du_project.git /du_project
+COPY /du_project/docker2401/src/ /usr/share/nginx/html
+EXPOSE 8888
+
