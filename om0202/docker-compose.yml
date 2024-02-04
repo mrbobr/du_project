@@ -1,0 +1,58 @@
+version: "3"
+
+services:
+
+  openmeetings:
+    image: apache/openmeetings:min-7.2.0
+    build: .
+    container_name: openm
+    environment:
+      - TZ="Europe/Moscow"
+      - OM_KURENTO_WS_URL=ws://kurento:8888/kurento
+      - OM_DB_HOST=postgresql
+      - OM_DB_PORT=5432
+      - OM_DB_TYPE=postgresql
+      - OM_DB_USER=openm
+      - OM_DB_PASS=secret
+      - OM_DB_NAME=openm
+      - OM_USER=admin
+      - OM_PASS=admin
+    ports:
+      - 5080:5080
+    volumes:
+      - ./logs:/opt/openmeetings/logs
+    depends_on:
+      - kurento
+      - postgresql
+    networks:
+      - om-net
+
+  postgresql:
+    image: postgres:15-alpine
+    container_name: postgresql
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=openm
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=openm
+    networks:
+      - om-net
+
+  kurento:
+    image: kurento/kurento-media-server
+    container_name: kurento
+    networks:
+      - om-net
+
+networks:
+  om-net:
+    name: om-net
+    driver: macvlan
+    driver_opts:
+      parent: enp0s3
+    ipam:
+      config:
+        - subnet: "192.168.0.0/24"
+          gateway: "192.168.0.1"
+          ip_range: "192.168.0.200/29"
